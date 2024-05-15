@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244894378898",
+    "project_id": "newbie-project-8d539",
+    "storage_bucket": "newbie-project-8d539.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244894378898:android:60e12fb905baba2346af4b",
+        "android_client_info": {
+          "package_name": "com.example.newbie_project_casio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdeNdNC-oxhrrhaeQnYw1Kp-EpGQzIhxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
