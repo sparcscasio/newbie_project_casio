@@ -11,6 +11,8 @@ class _ToDoModel {
     this.group,
     this.manager,
     this.reference,
+    this.duedate,
+    this.memo,
   });
 
   String? id;
@@ -20,6 +22,8 @@ class _ToDoModel {
   DocumentReference? reference;
   DocumentReference? group;
   int? state;
+  Timestamp? duedate;
+  String? memo;
 
   _ToDoModel.fromJson(dynamic json, this.reference) {
     name = json['name'];
@@ -28,6 +32,8 @@ class _ToDoModel {
     id = reference!.id;
     state = json['state'];
     group = json['group'];
+    duedate = json['duedate'];
+    memo = json['memo'];
   }
 
   dynamic toJson() {
@@ -39,6 +45,8 @@ class _ToDoModel {
     json['state'] = this.state;
     json['reference'] = this.reference;
     json['group'] = this.group;
+    json['duedate'] = this.duedate;
+    json['memo'] = this.memo;
 
     return json;
   }
@@ -77,6 +85,8 @@ class ToDoModel {
     this.group,
     this.manager,
     this.reference,
+    this.duedate,
+    this.memo,
   });
 
   String? name;
@@ -86,44 +96,42 @@ class ToDoModel {
   UserModel? manager;
   DocumentReference? reference;
   int? state;
+  Timestamp? duedate;
+  String? memo;
 
   fromSnapShot(DocumentSnapshot<Map<String, dynamic>> snapshot) async {
     _ToDoModel _toDoModel = _ToDoModel.fromSnapShot(snapshot);
-    print('_todo model : ${_toDoModel.toJson()}');
     this.id = _toDoModel.id;
     this.name = _toDoModel.name;
     this.reference = _toDoModel.reference;
     this.state = _toDoModel.state;
+    this.duedate = _toDoModel.duedate;
+    this.memo = _toDoModel.memo;
 
     List<DocumentReference<Object?>>? _workerReference = _toDoModel.worker;
     DocumentReference<Object?>? _managerReference = _toDoModel.manager;
     List<UserModel> worker = [];
 
-    try {
-      for (var wref in _workerReference!) {
+    if (_workerReference != null) {
+      for (var wref in _workerReference) {
         DocumentSnapshot wsnapshot = await wref.get();
         UserModel _worker = UserModel.fromSnapShot(
             wsnapshot as DocumentSnapshot<Map<String, dynamic>>);
         worker.add(_worker);
       }
-
       this.worker = worker;
-    } catch (error) {
-      print('phase 1');
-      print(error);
+    } else {
+      this.worker = null;
     }
 
-    try {
+    if (_managerReference != null) {
       DocumentSnapshot msnapshot = await _managerReference!.get();
       UserModel _manager = UserModel.fromSnapShot(
           msnapshot as DocumentSnapshot<Map<String, dynamic>>);
       this.manager = _manager;
-    } catch (error) {
-      print(error);
+    } else {
       this.manager = null;
     }
-    print('함수 실행 결과');
-    print(this.toJson());
   }
 
   fromQuerySnapshot(
@@ -133,32 +141,32 @@ class ToDoModel {
     this.name = _toDoModel.name;
     this.reference = _toDoModel.reference;
     this.state = _toDoModel.state;
+    this.duedate = _toDoModel.duedate;
+    this.memo = _toDoModel.memo;
     List<DocumentReference<Object?>>? _workerReference = _toDoModel.worker;
     DocumentReference<Object?>? _managerReference = _toDoModel.manager;
     List<UserModel> worker = [];
 
-    try {
-      for (var wref in _workerReference!) {
+    if (_workerReference != null) {
+      for (var wref in _workerReference) {
         DocumentSnapshot wsnapshot = await wref.get();
         UserModel _worker = UserModel.fromSnapShot(
             wsnapshot as DocumentSnapshot<Map<String, dynamic>>);
         worker.add(_worker);
       }
-    } catch (error) {
-      print(error);
+      this.worker = worker;
+    } else {
+      this.worker = null;
     }
 
-    try {
+    if (_managerReference != null) {
       DocumentSnapshot msnapshot = await _managerReference!.get();
       UserModel _manager = UserModel.fromSnapShot(
           msnapshot as DocumentSnapshot<Map<String, dynamic>>);
       this.manager = _manager;
-    } catch (error) {
-      print(error);
+    } else {
       this.manager = null;
     }
-    print('here!');
-    print(this.toJson());
   }
 
   dynamic toJson() {
@@ -169,6 +177,8 @@ class ToDoModel {
     json['id'] = this.id;
     json['state'] = this.state;
     json['group'] = this.group;
+    json['duedate'] = this.duedate;
+    json['memo'] = this.memo;
 
     return json;
   }

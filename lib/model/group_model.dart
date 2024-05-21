@@ -20,7 +20,11 @@ class _GroupModel {
   _GroupModel.fromJson(dynamic json, this.reference) {
     name = json['name'];
     id = reference!.id;
-    todo = List<DocumentReference>.from(json['todo']);
+    if (json['todo'] != null) {
+      todo = List<DocumentReference>.from(json['todo']);
+    } else {
+      todo = null;
+    }
     user = List<DocumentReference>.from(json['user']);
   }
 
@@ -84,31 +88,29 @@ class GroupModel {
     List<DocumentReference<Object?>>? _userReference = _groupModel.user;
     List<ToDoModel> todo = [];
     List<UserModel> user = [];
-    try {
-      for (var tref in _toDoReference!) {
+    if (_toDoReference != null) {
+      for (var tref in _toDoReference) {
         DocumentSnapshot tsnapshot = await tref.get();
         ToDoModel _todo = ToDoModel();
         await _todo
             .fromSnapShot(tsnapshot as DocumentSnapshot<Map<String, dynamic>>);
-        print(_todo.toJson());
         todo.add(_todo);
       }
-    } catch (error) {
-      return null;
+      this.todo = todo;
+    } else {
+      this.todo = null;
     }
-    try {
-      for (var uref in _userReference!) {
+    if (_userReference != null) {
+      for (var uref in _userReference) {
         DocumentSnapshot usnapshot = await uref.get();
         UserModel _user = UserModel.fromSnapShot(
             usnapshot as DocumentSnapshot<Map<String, dynamic>>);
         user.add(_user);
       }
-    } catch (error) {
-      print(error);
-      return null;
+      this.user = user;
+    } else {
+      this.user = null;
     }
-    this.user = user;
-    this.todo = todo;
   }
 
   fromQuerySnapshot(
@@ -122,30 +124,31 @@ class GroupModel {
     List<DocumentReference<Object?>>? _userReference = _groupModel.user;
     List<ToDoModel> todo = [];
     List<UserModel> user = [];
-    try {
-      for (var tref in _toDoReference!) {
+    if (_toDoReference != null) {
+      for (var tref in _toDoReference) {
         DocumentSnapshot tsnapshot = await tref.get();
         ToDoModel _todo = ToDoModel();
         await _todo
             .fromSnapShot(tsnapshot as DocumentSnapshot<Map<String, dynamic>>);
-        print(_todo);
         todo.add(_todo);
       }
-    } catch (error) {
-      print(error);
+      this.todo = todo;
+    } else {
+      this.todo = null;
     }
-    try {
-      for (var uref in _userReference!) {
+
+    if (_userReference != null) {
+      for (var uref in _userReference) {
         DocumentSnapshot usnapshot = await uref.get();
         UserModel _user = UserModel.fromSnapShot(
             usnapshot as DocumentSnapshot<Map<String, dynamic>>);
         user.add(_user);
       }
-    } catch (error) {
-      print(error);
+      this.user = user;
+    } else {
+      user = [];
+      this.user = null;
     }
-    this.user = user;
-    this.todo = todo;
   }
 
   dynamic toJson() {

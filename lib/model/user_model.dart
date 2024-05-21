@@ -12,7 +12,7 @@ class UserModel {
   });
 
   String? id;
-  String name = '';
+  String? name;
   List<DocumentReference>? group;
   List<DocumentReference>? todo;
   DocumentReference? reference;
@@ -20,8 +20,16 @@ class UserModel {
   UserModel.fromJson(dynamic json, this.reference) {
     name = json['name'];
     id = reference!.id;
-    group = json['group'];
-    todo = json['todo'];
+    if (json['group'] != null) {
+      group = List<DocumentReference>.from(json['group']);
+    } else {
+      group = null;
+    }
+    if (json['todo'] != null) {
+      todo = List<DocumentReference>.from(json['todo']);
+    } else {
+      todo = null;
+    }
   }
 
   dynamic toJson() {
