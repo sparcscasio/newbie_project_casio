@@ -3,7 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:newbie_project_casio/model/group_model.dart';
 import 'package:newbie_project_casio/model/todo_model.dart';
+import 'package:newbie_project_casio/model/user_model.dart';
 import 'package:newbie_project_casio/page/add_todo.dart';
+import 'package:newbie_project_casio/page/update_todo.dart';
+import 'package:newbie_project_casio/provider/group_provider.dart';
+import 'package:provider/provider.dart';
 
 class ServerPage extends StatefulWidget {
   final User user;
@@ -20,18 +24,18 @@ class _ServerPageState extends State<ServerPage> {
   void initState() {
     super.initState();
     // Firestore 컬렉션 변경 사항을 감지하여 전체 뷰 리셋
-    FirebaseFirestore.instance
-        .collection('todo')
-        .snapshots()
-        .listen((snapshot) {
-      setState(() {});
-    });
-    FirebaseFirestore.instance
-        .collection('user')
-        .snapshots()
-        .listen((snapshot) {
-      setState(() {}); // 전체 뷰 리셋
-    });
+    //FirebaseFirestore.instance
+    //  .collection('todo')
+    //  .snapshots()
+    //  .listen((snapshot) {
+    //  setState(() {});
+    //});
+    //FirebaseFirestore.instance
+    //    .collection('user')
+    //    .snapshots()
+    //    .listen((snapshot) {
+    //  setState(() {}); // 전체 뷰 리셋
+    //});
     user = widget.user;
   }
 
@@ -81,7 +85,8 @@ class _ServerPageState extends State<ServerPage> {
                                         SingleChildScrollView(
                                           child: Container(
                                             height: 300,
-                                            child: getToDoView(todo),
+                                            child:
+                                                getToDoView(todo, groupModel),
                                           ),
                                         ),
                                       ]);
@@ -116,7 +121,7 @@ Future<String?> getNameFromDocument(DocumentReference documentReference) async {
   return snapshot.toString();
 }
 
-Widget getToDoView(List<ToDoModel>? toDoList) {
+Widget getToDoView(List<ToDoModel>? toDoList, GroupModel groupModel) {
   if (toDoList != null) {
     return ListView.separated(
       itemCount: toDoList.length,
@@ -130,12 +135,17 @@ Widget getToDoView(List<ToDoModel>? toDoList) {
                 StateView(todo.state!),
                 Text('${todo.name}'),
                 Text('manager : ${todo.manager!.name}'),
+                IconButton(
+                    onPressed: () {
+                      deleteToDo(todo, groupModel);
+                    },
+                    icon: Icon(Icons.delete))
               ],
             ),
             height: 50,
           ),
           onTap: () {
-            ShowToDoDialog(context, todo);
+            ShowToDoDialog(context, todo, groupModel);
           },
         );
       },
@@ -219,7 +229,7 @@ Widget StateView(int state) {
   }
 }
 
-void ShowToDoDialog(BuildContext context, ToDoModel todo) {
+void ShowToDoDialog(BuildContext context, ToDoModel todo, GroupModel group) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -234,6 +244,11 @@ void ShowToDoDialog(BuildContext context, ToDoModel todo) {
               Text(
                   'workers : ${todo.worker!.map((worker) => worker.name).join(', ')}'),
               getMemo(todo.memo),
+              ElevatedButton(
+                  onPressed: () {
+                    ShowUpdateDialog(context, todo, group);
+                  },
+                  child: Text('update')),
             ],
           ),
         );
@@ -265,4 +280,45 @@ Widget getMemo(String? memo) {
   } else {
     return Container();
   }
+}
+
+void ShowUpdateDialog(BuildContext context, ToDoModel todo, GroupModel group) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return UpdateToDoPage(
+          toDoModel: todo,
+          groupModel: group,
+        );
+      });
+}
+
+deleteToDo(ToDoModel todo, GroupModel group) async {
+  DocumentReference groupRef = group.reference!;
+  DocumentReference todoRef = todo.reference!;
+  List<DocumentReference> user =
+      todo.worker!.map((item) => item.reference!).toList();
+
+  for (var userRef in user) {
+    DocumentSnapshot documentSnapshot = await userRef.get();
+    Map<String, dynamic>? data =
+        documentSnapshot.data() as Map<String, dynamic>?;
+    try {
+      data!['todo'].remove(todoRef);
+    } catch (error) {
+      print(error);
+    }
+    userRef.set(data);
+  }
+
+  DocumentSnapshot groupSnapshot = await groupRef.get();
+  Map<String, dynamic>? data = groupSnapshot.data() as Map<String, dynamic>?;
+  try {
+    data!['todo'].remove(todoRef);
+  } catch (error) {
+    print(error);
+  }
+  groupRef.set(data);
+
+  await todoRef.delete();
 }

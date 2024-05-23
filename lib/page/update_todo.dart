@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:newbie_project_casio/model/group_model.dart';
+import 'package:newbie_project_casio/model/todo_model.dart';
 import 'package:newbie_project_casio/model/user_model.dart';
 
 List<bool>? _indexList;
@@ -9,20 +10,47 @@ int _index = 0;
 String _name = '';
 String? _memo;
 DateTime? _selectedDate = null;
+int state = 0;
 
-class AddToDoPage extends StatefulWidget {
+class UpdateToDoPage extends StatefulWidget {
+  final ToDoModel toDoModel;
   final GroupModel groupModel;
-  const AddToDoPage({Key? key, required this.groupModel}) : super(key: key);
+  const UpdateToDoPage(
+      {Key? key, required this.toDoModel, required this.groupModel})
+      : super(key: key);
 
   @override
-  State<AddToDoPage> createState() => _AddToDoState();
+  State<UpdateToDoPage> createState() => _UpdateToDoState();
 }
 
-class _AddToDoState extends State<AddToDoPage> {
+class _UpdateToDoState extends State<UpdateToDoPage> {
   @override
   Widget build(BuildContext context) {
+    ToDoModel toDoModel = widget.toDoModel;
+    List<UserModel> _workers = toDoModel.worker!;
+    UserModel _manager = toDoModel.manager!;
     GroupModel groupModel = widget.groupModel;
-    List<UserModel>? _users = groupModel.user;
+    List<UserModel> _users = groupModel.user!;
+    _indexList = List<bool>.filled(_users.length, false);
+    _name = toDoModel.name!;
+    _memo = toDoModel.memo;
+    state = toDoModel.state ?? 0;
+    List<String> _workerid = _workers.map((item) => item.id!).toList();
+
+    if (toDoModel.duedate != null) {
+      _selectedDate = toDoModel.duedate!.toDate();
+    }
+
+    for (var i = 0; i < _users.length; i++) {
+      if (_users[i].id == _manager.id) {
+        print('manager matched!');
+        _index = i;
+      }
+      if (_workerid.contains(_users[i].id)) {
+        _indexList![i] = true;
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -90,12 +118,11 @@ class _AddToDoState extends State<AddToDoPage> {
                   if (worker.length != 0) {
                     if (_name == '') {
                     } else {
-                      DocumentReference manager = _users![_index].reference!;
+                      DocumentReference manager = _users[_index].reference!;
                       DocumentReference groupref = groupModel.reference!;
-                      DocumentReference _todo =
-                          UpdateToDo(groupref, worker, manager, _name, _memo);
-                      UpdateGroup(_todo, groupref);
-                      UpdateUser(_todo, worker);
+                      DocumentReference todoref = toDoModel.reference!;
+                      UpdateToDo(
+                          groupref, worker, manager, _name, _memo, todoref);
                     }
                   } else {}
                 } else {}
@@ -122,13 +149,11 @@ class _UserNameStackState extends State<UserNameStack> {
   @override
   void initState() {
     super.initState();
-    if (widget.users != null) {
-      _indexList = List<bool>.filled(widget.users!.length, false);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_indexList);
     if (widget.users != null) {
       return ListView.separated(
         itemCount: widget.users!.length,
@@ -330,45 +355,22 @@ class _DateGetterState extends State<DateGetter> {
   }
 }
 
-UpdateToDo(DocumentReference group, List<DocumentReference> worker,
-    DocumentReference manager, String name, String? memo) {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  DocumentReference docRef = _firestore.collection("todo").doc();
-  docRef.set({
+UpdateToDo(
+    DocumentReference group,
+    List<DocumentReference> worker,
+    DocumentReference manager,
+    String name,
+    String? memo,
+    DocumentReference docRef) {
+  docRef.update({
     'name': name,
     'group': group,
     'worker': worker,
     'manager': manager,
-    'state': 0,
+    'state': state,
     'duedate': _selectedDate,
     'memo': memo,
   });
-  return docRef;
-}
-
-UpdateGroup(DocumentReference todo, DocumentReference group) async {
-  DocumentSnapshot documentSnapshot = await group.get();
-  Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
-  try {
-    data!['todo'].add(todo);
-  } catch (error) {
-    data!['todo'] = [todo];
-  }
-  group.set(data);
-}
-
-UpdateUser(DocumentReference todo, List<DocumentReference> worker) async {
-  for (var docref in worker) {
-    DocumentSnapshot documentSnapshot = await docref.get();
-    Map<String, dynamic>? data =
-        documentSnapshot.data() as Map<String, dynamic>?;
-    try {
-      data!['todo'].add(todo);
-    } catch (error) {
-      data!['todo'] = [todo];
-    }
-    docref.set(data);
-  }
 }
 
 Timegetter(BuildContext context) {

@@ -110,6 +110,7 @@ class ToDoModel {
 
     List<DocumentReference<Object?>>? _workerReference = _toDoModel.worker;
     DocumentReference<Object?>? _managerReference = _toDoModel.manager;
+    
     List<UserModel> worker = [];
 
     if (_workerReference != null) {

@@ -1,13 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:newbie_project_casio/page/my_page.dart';
 import 'package:newbie_project_casio/page/server_page.dart';
 import 'package:newbie_project_casio/page/task_page.dart';
+import 'package:newbie_project_casio/provider/group_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:async/async.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MainPage extends StatefulWidget {
   final User user;
 
   MainPage({Key? key, required this.user}) : super(key: key);
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -17,40 +23,37 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
+    print('init state!');
     super.initState();
+
     user = widget.user;
   }
 
   @override
   Widget build(BuildContext context) {
+    print('new build');
+
     return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          body: TabBarView(
-            children: [
-              TaskPage(user: user,),
-              ServerPage(user: user,),
-              MyPage(user: user),
-            ],
-          ),
-          bottomNavigationBar: TabBar(
-              labelColor: Colors.lightGreen,
-              unselectedLabelColor: Colors.black38,
-              indicatorColor: Colors.lightGreen,
-              tabs: [
-                Tab(
-                  icon: Icon(Icons.home),
-                  text: 'home',
-                ),
-                Tab(
-                  icon: Icon(Icons.chat),
-                  text: 'chat',
-                ),
-                Tab(
-                  icon: Icon(Icons.people),
-                  text: 'my',
-                )
-              ]),
-        ));
+      length: 3,
+      child: Scaffold(
+        body: TabBarView(
+          children: [
+            TaskPage(user: user),
+            ServerPage(user: user),
+            MyPage(user: user),
+          ],
+        ),
+        bottomNavigationBar: const TabBar(
+          labelColor: Colors.lightGreen,
+          unselectedLabelColor: Colors.black38,
+          indicatorColor: Colors.lightGreen,
+          tabs: [
+            Tab(icon: Icon(Icons.home), text: 'hello'),
+            Tab(icon: Icon(Icons.chat), text: 'chat'),
+            Tab(icon: Icon(Icons.people), text: 'my'),
+          ],
+        ),
+      ),
+    );
   }
 }

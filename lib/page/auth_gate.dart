@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:newbie_project_casio/model/group_model.dart';
 import 'package:newbie_project_casio/page/main_page.dart';
+import 'package:newbie_project_casio/provider/group_provider.dart';
+import 'package:provider/provider.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
