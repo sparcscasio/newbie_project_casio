@@ -371,6 +371,7 @@ UpdateToDo(
     'duedate': _selectedDate,
     'memo': memo,
   });
+  print('${docRef} updated');
 }
 
 Timegetter(BuildContext context) {

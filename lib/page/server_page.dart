@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:newbie_project_casio/model/group_model.dart';
 import 'package:newbie_project_casio/model/todo_model.dart';
 import 'package:newbie_project_casio/model/user_model.dart';
+import 'package:newbie_project_casio/page/add_group.dart';
 import 'package:newbie_project_casio/page/add_todo.dart';
 import 'package:newbie_project_casio/page/update_todo.dart';
 import 'package:newbie_project_casio/provider/group_provider.dart';
@@ -24,18 +25,18 @@ class _ServerPageState extends State<ServerPage> {
   void initState() {
     super.initState();
     // Firestore 컬렉션 변경 사항을 감지하여 전체 뷰 리셋
-    //FirebaseFirestore.instance
-    //  .collection('todo')
-    //  .snapshots()
-    //  .listen((snapshot) {
-    //  setState(() {});
-    //});
-    //FirebaseFirestore.instance
-    //    .collection('user')
-    //    .snapshots()
-    //    .listen((snapshot) {
-    //  setState(() {}); // 전체 뷰 리셋
-    //});
+    // FirebaseFirestore.instance
+    //     .collection('todo')
+    //     .snapshots()
+    //     .listen((snapshot) {
+    //   setState(() {});
+    // });
+    // FirebaseFirestore.instance
+    //     .collection('user')
+    //     .snapshots()
+    //     .listen((snapshot) {
+    //   setState(() {}); // 전체 뷰 리셋
+    // });
     user = widget.user;
   }
 
@@ -48,6 +49,25 @@ class _ServerPageState extends State<ServerPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        child: AddGroupPage(user: user),
+                      );
+                    });
+              },
+              icon: const Icon(Icons.add))
+        ],
+      ),
+      floatingActionButton: IconButton(
+        icon: Icon(Icons.reset_tv),
+        onPressed: () {
+          setState(() {});
+        },
       ),
       body: SafeArea(
           child: StreamBuilder<QuerySnapshot>(
