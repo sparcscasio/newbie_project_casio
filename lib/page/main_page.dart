@@ -53,6 +53,12 @@ class _MainPageState extends State<MainPage> {
             Tab(icon: Icon(Icons.people), text: 'my'),
           ],
         ),
+        floatingActionButton: IconButton(
+        icon: Icon(Icons.reset_tv),
+        onPressed: () {
+          setState(() {});
+        },
+      ),
       ),
     );
   }
