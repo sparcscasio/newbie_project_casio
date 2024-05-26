@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:newbie_project_casio/model/group_model.dart';
@@ -43,7 +44,6 @@ class _UpdateToDoState extends State<UpdateToDoPage> {
 
     for (var i = 0; i < _users.length; i++) {
       if (_users[i].id == _manager.id) {
-        print('manager matched!');
         _index = i;
       }
       if (_workerid.contains(_users[i].id)) {
@@ -61,8 +61,30 @@ class _UpdateToDoState extends State<UpdateToDoPage> {
           child: SafeArea(
             child: Column(
               children: [
-                Text(groupModel.name!),
-                Text('select workers'),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: 250,
+                  height: 30,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 100,
+                    //height: 30,
+                    child: Center(
+                        child: Text(
+                      '진행 인원',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    )),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 Center(
                   child: Container(
                     clipBehavior: Clip.antiAlias,
@@ -78,7 +100,30 @@ class _UpdateToDoState extends State<UpdateToDoPage> {
                     //color: Colors.black,
                   ),
                 ),
-                Text('select manager'),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: 250,
+                  height: 30,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 100,
+                    //height: 30,
+                    child: Center(
+                        child: Text(
+                      '담당자',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    )),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 Center(
                   child: Container(
                     clipBehavior: Clip.antiAlias,
@@ -94,16 +139,53 @@ class _UpdateToDoState extends State<UpdateToDoPage> {
                     //color: Colors.black,
                   ),
                 ),
-                NameGetter(),
-                MemoGetter(),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  child: NameGetter(),
+                  width: 250,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 DateGetter(),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  height: 250,
+                  width: 300,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: SizedBox(
+                      child: MemoGetter(),
+                      width: 250,
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.lightGreen),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromARGB(255, 211, 228, 193),
+                  ),
+                ),
               ],
             ),
           ),
         ),
         appBar: AppBar(
           backgroundColor: Colors.lightGreen,
-          title: Text('hello'),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              icon: Icon(Icons.arrow_back)),
+          title: Text(
+            '${_name} 수정 페이지',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
           actions: [
             IconButton(
               icon: Icon(Icons.add),
@@ -127,6 +209,7 @@ class _UpdateToDoState extends State<UpdateToDoPage> {
                   } else {}
                 } else {}
                 Navigator.pop(context);
+                Navigator.of(context, rootNavigator: true).pop();
               },
             ),
           ],
@@ -163,16 +246,20 @@ class _UserNameStackState extends State<UserNameStack> {
             selectedTileColor: Colors.lightGreen,
             title: Text(
               widget.users![index].name!,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: _indexList![index]
+                    ? Colors.white
+                    : Colors.black, // 선택된 상태에 따라 텍스트 색상 변경
                 fontSize: 15,
               ),
             ),
             selected: _indexList![index],
             onTap: () {
-              setState(() {
-                _indexList![index] = !_indexList![index];
-              });
+              if (mounted) {
+                setState(() {
+                  _indexList![index] = !_indexList![index];
+                });
+              }
             },
           );
         },
@@ -217,17 +304,21 @@ class _ManagerStackState extends State<ManagerStack> {
             selectedTileColor: Colors.lightGreen,
             title: Text(
               widget.users![index].name!,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: (index == _index)
+                    ? Colors.white
+                    : Colors.black, // 선택된 상태에 따라 텍스트 색상 변경
                 fontSize: 15,
               ),
             ),
             selected: index == _index,
             onTap: () {
-              setState(() {
-                _index = index;
-                print(_index);
-              });
+              if (mounted) {
+                setState(() {
+                  _index = index;
+                  print(_index);
+                });
+              }
             },
           );
         },
@@ -252,7 +343,7 @@ class NameGetter extends StatefulWidget {
 }
 
 class _NameGetterState extends State<NameGetter> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController(text: _name);
 
   @override
   void dispose() {
@@ -262,26 +353,63 @@ class _NameGetterState extends State<NameGetter> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          // TextField에 컨트롤러 연결
-          Text('name : ${_name}'),
-          TextField(
-            controller: _controller,
-            decoration: InputDecoration(labelText: 'Enter name'),
+    return Column(
+      children: [
+        // TextField에 컨트롤러 연결
+        Container(
+          width: 250,
+          height: 30,
+          child: Row(
+            children: [
+              Container(
+                width: 100,
+                height: 30,
+                child: Center(
+                    child: Text(
+                  '과제명',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(_name),
+            ],
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _name = _controller.text;
-                });
-              },
-              child: Text('Enter')),
-        ],
-      ),
+        ),
+        TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            labelText: 'Enter name',
+            labelStyle: TextStyle(color: Colors.grey),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+            ),
+          ),
+          cursorColor: Colors.green,
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _name = _controller.text;
+            });
+          },
+          child: Text(
+            'Enter',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+        ),
+      ],
     );
   }
 }
@@ -292,7 +420,7 @@ class MemoGetter extends StatefulWidget {
 }
 
 class _MemoGetterState extends State<MemoGetter> {
-  final TextEditingController _controller2 = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController(text: _memo);
 
   @override
   void dispose() {
@@ -302,26 +430,53 @@ class _MemoGetterState extends State<MemoGetter> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          // TextField에 컨트롤러 연결
-          Text('memo : ${_memo}'),
-          TextField(
-            controller: _controller2,
-            decoration: InputDecoration(labelText: 'Enter memo'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // TextField에 컨트롤러 연결
+        Container(
+          width: 100,
+          height: 30,
+          child: Center(
+              child: Text(
+            '비고',
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          )),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.green,
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _memo = _controller2.text;
-                });
-              },
-              child: Text('Enter')),
-        ],
-      ),
+        ),
+        TextField(
+          controller: _controller2,
+          decoration: InputDecoration(
+            labelText: 'Enter memo',
+            labelStyle: TextStyle(color: Colors.grey),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+            ),
+          ),
+          cursorColor: Colors.green,
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _memo = _controller2.text;
+            });
+          },
+          child: Text(
+            'Enter',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+        ),
+      ],
     );
   }
 }
@@ -336,20 +491,53 @@ class _DateGetterState extends State<DateGetter> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(_selectedDate.toString()),
+        SizedBox(
+          width: 250,
+          child: Row(
+            children: [
+              Container(
+                width: 100,
+                height: 30,
+                child: Center(
+                    child: Text(
+                  '마감일',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(_selectedDate.toString()),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
         ElevatedButton(
-            onPressed: () {
-              showDatePicker(
-                      context: context,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2050))
-                  .then((selectedDate) {
-                setState(() {
-                  _selectedDate = selectedDate;
-                });
+          onPressed: () {
+            showDatePicker(
+                    context: context,
+                    firstDate: DateTime(2024),
+                    lastDate: DateTime(2050))
+                .then((selectedDate) {
+              setState(() {
+                _selectedDate = selectedDate;
               });
-            },
-            child: Text('pick duedate')),
+            });
+          },
+          child: Text(
+            'pick duedate',
+            style: TextStyle(color: Colors.green),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.white),
+              shadowColor: MaterialStatePropertyAll(Colors.transparent)),
+        ),
       ],
     );
   }

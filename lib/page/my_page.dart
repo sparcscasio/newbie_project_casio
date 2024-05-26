@@ -35,8 +35,81 @@ class _MyPageState extends State<MyPage> {
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              SignOutButton(),
+              SizedBox(
+                height: 20,
+              ),
               Text('email : ${user.email}'),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                width: 100,
+                height: 30,
+                child: Center(
+                    child: Text(
+                  '소속 그룹',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.green,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: FutureBuilder(
+                    future: FirebaseFirestore.instance
+                        .collection('user')
+                        .doc(user.uid)
+                        .get(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // 데이터를 기다리는 동안 로딩 표시
+                      } else {
+                        Map<String, dynamic> data =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        return Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.lightGreen),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: SingleChildScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxHeight: MediaQuery.of(context).size.height,
+                                ),
+                                child: ListView.builder(
+                                    itemCount: data['group'].length,
+                                    itemBuilder: (ctx, index) {
+                                      return FutureBuilder(
+                                          future: getGroupModel(
+                                              data['group'][index]),
+                                          builder: (_context, _snapshot) {
+                                            GroupModel? groupModel =
+                                                _snapshot.data;
+                                            if (_snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator(); // 데이터가 로드될 때까지 로딩 표시
+                                            } else {
+                                              return Container(
+                                                child: Text(groupModel!.name!),
+                                              );
+                                            }
+                                          });
+                                    }),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                    }),
+              ),
               TextButton(
                   onPressed: () {
                     state = 0;
@@ -44,62 +117,30 @@ class _MyPageState extends State<MyPage> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
+                            contentPadding: EdgeInsets.all(8.0),
                             title: Text('Add group'),
-                            content: AddGroup(user, context),
+                            content: Container(
+                                height: 200, child: AddGroup(user, context)),
                           );
                         });
                   },
-                  child: Text('add new group')),
-              FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection('user')
-                      .doc(user.uid)
-                      .get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // 데이터를 기다리는 동안 로딩 표시
-                    } else {
-                      Map<String, dynamic> data =
-                          snapshot.data!.data() as Map<String, dynamic>;
-                      return SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context)
-                                .size
-                                .height,
-                          ),
-                          child: ListView.builder(
-                              itemCount: data['group'].length,
-                              itemBuilder: (ctx, index) {
-                                return FutureBuilder(
-                                    future:
-                                        getGroupModel(data['group'][index]),
-                                    builder: (_context, _snapshot) {
-                                      GroupModel? groupModel = _snapshot.data;
-                                      if (_snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const CircularProgressIndicator(); // 데이터가 로드될 때까지 로딩 표시
-                                      } else {
-                                        return Container(
-                                          child: Text(groupModel!.name!),
-                                        );
-                                      }
-                                    });
-                              }),
-                        ),
-                      );
-                    }
-                  }),
+                  child: Text(
+                    'add new group',
+                    style: TextStyle(color: Colors.lightGreen),
+                  )),
+              SignOutButton(
+                variant: ButtonVariant.filled,
+              ),
             ],
           ),
         ),
       ),
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
-        title: Text('This is MyPage'),
+        title: Text(
+          'Group Task Manager',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -119,7 +160,20 @@ Widget AddGroup(User user, BuildContext context) {
         children: [
           TextField(
             controller: _controller,
-            decoration: InputDecoration(labelText: 'Enter group code'),
+            decoration: InputDecoration(
+              labelText: 'Enter name',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+            ),
+            cursorColor: Colors.green,
+          ),
+          SizedBox(
+            height: 20,
           ),
           ElevatedButton(
             onPressed: () async {
@@ -131,32 +185,58 @@ Widget AddGroup(User user, BuildContext context) {
                     context: context,
                     builder: (BuildContext context) {
                       return Dialog(
-                        child: Text('added to ${groupName}'),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('${groupName}에 추가되었습니다.'),
+                        ),
                       );
                     });
+                Future.delayed(Duration(seconds: 2), () {
+                  Navigator.pop(context);
+                  Navigator.of(context, rootNavigator: true).pop();
+                });
               } else {
                 if (_state == -1) {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return Dialog(
-                          child: Text('WRONG group code!'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('잘못된 그룹 코드입니다\n코드를 다시 확인해주세요.'),
+                          ),
                         );
                       });
+                  Future.delayed(Duration(seconds: 2), () {
+                    Navigator.pop(context);
+                    Navigator.of(context, rootNavigator: true).pop();
+                  });
                 } else {
                   if (_state == 2) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return Dialog(
-                            child: Text('already in ${groupName}'),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text('이미 ${groupName}에 속해 있습니다.'),
+                            ),
                           );
                         });
+                    Future.delayed(Duration(seconds: 2), () {
+                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop();
+                    });
                   }
                 }
               }
             },
-            child: Text('Enter'),
+            child: Text(
+              'Enter',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
           ),
         ],
       ),

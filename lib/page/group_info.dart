@@ -34,24 +34,43 @@ class _GroupInfoState extends State<GroupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NameGetter(
-          groupReference: groupModel.reference!,
-        ),
-        Text('${groupModel.user!.map((item) => item.name)}'),
-        Text('group code : ${groupModel.id}'),
-        ElevatedButton(
-            onPressed: () {
-              DeleteGroup(groupModel);
-            },
-            child: Text('delete this group')),
-        ElevatedButton(
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          NameGetter(
+            groupReference: groupModel.reference!,
+          ),
+          Center(
+            child: Text(
+              '<그룹 구성원>',
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+          Text('${groupModel.user!.map((item) => item.name)}'),
+          SizedBox(height: 20,),
+          Text('group code : ${groupModel.id}'),
+          TextButton(
+              onPressed: () {
+                DeleteGroup(groupModel);
+              },
+              child: Text(
+                'delete this group',
+                style: TextStyle(color: Colors.lightGreen),
+              )),
+          ElevatedButton(
             onPressed: () {
               LeaveGroup(groupModel, userRef);
             },
-            child: Text('leave this group'))
-      ],
+            child: Text(
+              'leave this group',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+          )
+        ],
+      ),
     );
   }
 }
@@ -88,33 +107,50 @@ class _NameGetterState extends State<NameGetter> {
         children: [
           // TextField에 컨트롤러 연결
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('name :'),
+              Text(
+                'name :',
+                style: TextStyle(color: Colors.green, fontSize: 20),
+              ),
               SizedBox(
                 width: 10,
               ),
               SizedBox(
-                width: 200,
+                width: 150,
+                height: 20,
                 child: TextField(
                   controller: _controller,
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  ),
+                  cursorColor: Colors.green,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
+          TextButton(
               onPressed: () async {
                 setState(() {
                   _name = _controller.text;
                 });
-
                 DocumentSnapshot snapshot = await groupReference.get();
                 Map<String, dynamic> data =
                     snapshot.data() as Map<String, dynamic>;
                 data['name'] = _name;
                 groupReference.set(data);
+                Navigator.pop(context);
               },
-              child: Text('change name')),
+              child: Text(
+                'change name',
+                style: TextStyle(color: Colors.lightGreen),
+              )),
         ],
       ),
     );

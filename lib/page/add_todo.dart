@@ -33,8 +33,16 @@ class _AddToDoState extends State<AddToDoPage> {
           child: SafeArea(
             child: Column(
               children: [
-                Text(groupModel.name!),
-                Text('select workers'),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '진행 인원 선택 :',
+                  style: TextStyle(color: Colors.green),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
                 Center(
                   child: Container(
                     clipBehavior: Clip.antiAlias,
@@ -50,7 +58,16 @@ class _AddToDoState extends State<AddToDoPage> {
                     //color: Colors.black,
                   ),
                 ),
-                Text('select manager'),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  '담당자 선택 :',
+                  style: TextStyle(color: Colors.green),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
                 Center(
                   child: Container(
                     clipBehavior: Clip.antiAlias,
@@ -66,8 +83,17 @@ class _AddToDoState extends State<AddToDoPage> {
                     //color: Colors.black,
                   ),
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 NameGetter(),
+                SizedBox(
+                  height: 20,
+                ),
                 MemoGetter(),
+                SizedBox(
+                  height: 20,
+                ),
                 DateGetter(),
               ],
             ),
@@ -75,10 +101,16 @@ class _AddToDoState extends State<AddToDoPage> {
         ),
         appBar: AppBar(
           backgroundColor: Colors.lightGreen,
-          title: Text('hello'),
+          title: Text(
+            '과제 추가',
+            style: TextStyle(color: Colors.white),
+          ),
           actions: [
             IconButton(
-              icon: Icon(Icons.add),
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
               onPressed: () {
                 List<DocumentReference> worker = [];
                 if (_indexList != null) {
@@ -138,8 +170,10 @@ class _UserNameStackState extends State<UserNameStack> {
             selectedTileColor: Colors.lightGreen,
             title: Text(
               widget.users![index].name!,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: _indexList![index]
+                    ? Colors.white
+                    : Colors.black, // 선택된 상태에 따라 텍스트 색상 변경
                 fontSize: 15,
               ),
             ),
@@ -192,8 +226,10 @@ class _ManagerStackState extends State<ManagerStack> {
             selectedTileColor: Colors.lightGreen,
             title: Text(
               widget.users![index].name!,
-              style: const TextStyle(
-                color: Colors.black,
+              style: TextStyle(
+                color: (index == _index)
+                    ? Colors.white
+                    : Colors.black, // 선택된 상태에 따라 텍스트 색상 변경
                 fontSize: 15,
               ),
             ),
@@ -227,7 +263,7 @@ class NameGetter extends StatefulWidget {
 }
 
 class _NameGetterState extends State<NameGetter> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController(text: _name);
 
   @override
   void dispose() {
@@ -237,26 +273,66 @@ class _NameGetterState extends State<NameGetter> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          // TextField에 컨트롤러 연결
-          Text('name : ${_name}'),
-          TextField(
-            controller: _controller,
-            decoration: InputDecoration(labelText: 'Enter name'),
+    return Column(
+      children: [
+        // TextField에 컨트롤러 연결
+        Container(
+          width: 250,
+          height: 30,
+          child: Row(
+            children: [
+              Container(
+                width: 70,
+                height: 30,
+                child: Center(
+                    child: Text(
+                  '과제명',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(_name),
+            ],
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _name = _controller.text;
-                });
-              },
-              child: Text('Enter')),
-        ],
-      ),
+        ),
+        SizedBox(
+          width: 250,
+          child: TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              labelText: 'Enter name',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+            ),
+            cursorColor: Colors.green,
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _name = _controller.text;
+            });
+          },
+          child: Text(
+            'Enter',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+        ),
+      ],
     );
   }
 }
@@ -267,7 +343,7 @@ class MemoGetter extends StatefulWidget {
 }
 
 class _MemoGetterState extends State<MemoGetter> {
-  final TextEditingController _controller2 = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController(text: _memo);
 
   @override
   void dispose() {
@@ -277,26 +353,56 @@ class _MemoGetterState extends State<MemoGetter> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          // TextField에 컨트롤러 연결
-          Text('memo : ${_memo}'),
-          TextField(
-            controller: _controller2,
-            decoration: InputDecoration(labelText: 'Enter memo'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // TextField에 컨트롤러 연결
+        Container(
+          width: 100,
+          height: 30,
+          child: Center(
+              child: Text(
+            '비고',
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          )),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.green,
           ),
-          SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _memo = _controller2.text;
-                });
-              },
-              child: Text('Enter')),
-        ],
-      ),
+        ),
+        SizedBox(
+          width: 250,
+          child: TextField(
+            controller: _controller2,
+            decoration: InputDecoration(
+              labelText: 'Enter memo',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+            ),
+            cursorColor: Colors.green,
+          ),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _memo = _controller2.text;
+            });
+          },
+          child: Text(
+            'Enter',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+        ),
+      ],
     );
   }
 }
@@ -312,7 +418,7 @@ class _DateGetterState extends State<DateGetter> {
     return Column(
       children: [
         Text(_selectedDate.toString()),
-        ElevatedButton(
+        TextButton(
             onPressed: () {
               showDatePicker(
                       context: context,
@@ -324,7 +430,10 @@ class _DateGetterState extends State<DateGetter> {
                 });
               });
             },
-            child: Text('pick duedate')),
+            child: Text(
+              'pick duedate',
+              style: TextStyle(color: Colors.green),
+            )),
       ],
     );
   }

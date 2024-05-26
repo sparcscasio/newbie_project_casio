@@ -18,7 +18,9 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => GroupListProvider(),
-      child: MainApp(),
+      child: MainApp(
+        
+      ),
     ),
   );
 }

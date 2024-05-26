@@ -48,17 +48,17 @@ class _MainPageState extends State<MainPage> {
           unselectedLabelColor: Colors.black38,
           indicatorColor: Colors.lightGreen,
           tabs: [
-            Tab(icon: Icon(Icons.home), text: 'hello'),
-            Tab(icon: Icon(Icons.chat), text: 'chat'),
+            Tab(icon: Icon(Icons.task), text: 'task'),
+            Tab(icon: Icon(Icons.chat), text: 'group'),
             Tab(icon: Icon(Icons.people), text: 'my'),
           ],
         ),
         floatingActionButton: IconButton(
-        icon: Icon(Icons.reset_tv),
-        onPressed: () {
-          setState(() {});
-        },
-      ),
+          icon: Icon(Icons.reset_tv),
+          onPressed: () {
+            setState(() {});
+          },
+        ),
       ),
     );
   }

@@ -27,15 +27,24 @@ class _AddGroupState extends State<AddGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text(userRef.toString()),
-      NameGetter(),
-      ElevatedButton(
+    return SizedBox(
+      height: 250,
+      child: Column(children: [
+        NameGetter(),
+        ElevatedButton(
           onPressed: () {
             UpdateDatabase(userRef);
+            Navigator.pop(context);
           },
-          child: Text('Add Group')),
-    ]);
+          child: Text(
+            '그룹 추가하기',
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.lightGreen)),
+        ),
+      ]),
+    );
   }
 }
 
@@ -60,19 +69,35 @@ class _NameGetterState extends State<NameGetter> {
       child: Column(
         children: [
           // TextField에 컨트롤러 연결
-          Text('name : ${_name}'),
+          Text(
+            '이름 : ${_name}',
+            style: TextStyle(color: Colors.green),
+          ),
           TextField(
             controller: _controller,
-            decoration: InputDecoration(labelText: 'Enter name'),
+            decoration: InputDecoration(
+              labelText: 'Enter name',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.green),
+              ),
+            ),
+            cursorColor: Colors.green,
           ),
           SizedBox(height: 20),
-          ElevatedButton(
+          TextButton(
               onPressed: () {
                 setState(() {
                   _name = _controller.text;
                 });
               },
-              child: Text('Enter')),
+              child: Text(
+                'Enter',
+                style: TextStyle(color: Colors.lightGreen),
+              )),
         ],
       ),
     );

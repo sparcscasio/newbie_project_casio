@@ -184,49 +184,64 @@ class _TaskPageState extends State<TaskPage> {
       );
     } else {
       if (state == 1) {
-        return Row(
-          children: [
-            Text(
-              '승인 대기',
-              style: TextStyle(color: Colors.red),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  SetState(-1, todo);
-                  setState(() {});
-                },
-                child: Text('반려')),
-            SizedBox(
-              width: 10,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  SetState(2, todo);
-                  setState(() {});
-                },
-                child: Text('승인')),
-          ],
+        return Expanded(
+          child: Row(
+            children: [
+              Text(
+                '승인 대기',
+                style: TextStyle(color: Colors.red),
+              ),
+              Spacer(),
+              IconButton(
+                  onPressed: () {
+                    SetState(-1, todo);
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    Icons.block_rounded,
+                    color: Colors.red,
+                  )),
+              SizedBox(
+                width: 5,
+              ),
+              IconButton(
+                  onPressed: () {
+                    SetState(2, todo);
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: Colors.green,
+                  )),
+              SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
         );
       } else {
-        return Row(
-          children: [
-            Text(
-              '승인 완료',
-              style: TextStyle(color: Colors.green),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  SetState(1, todo);
-                  setState(() {});
-                },
-                child: Text('승인 취소')),
-          ],
+        return Expanded(
+          child: Row(
+            children: [
+              Text(
+                '승인 완료',
+                style: TextStyle(color: Colors.green),
+              ),
+              Spacer(),
+              IconButton(
+                  onPressed: () {
+                    SetState(1, todo);
+                    setState(() {});
+                  },
+                  icon: Icon(
+                    Icons.block_rounded,
+                    color: Colors.grey,
+                  )),
+              SizedBox(
+                width: 10,
+              ),
+            ],
+          ),
         );
       }
     }
@@ -236,22 +251,32 @@ class _TaskPageState extends State<TaskPage> {
     int state = todo.state!;
 
     if (state == 0) {
-      return Row(
-        children: [
-          Text(
-            '진행 중',
-            style: TextStyle(color: Colors.grey),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          ElevatedButton(
+      return Expanded(
+        child: Row(
+          children: [
+            Text(
+              '진행 중',
+              style: TextStyle(color: Colors.grey),
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            Spacer(),
+            IconButton(
               onPressed: () {
                 SetState(1, todo);
                 setState(() {});
               },
-              child: Text('승인 요청하기')),
-        ],
+              icon: Icon(
+                Icons.arrow_circle_up_rounded,
+                color: Colors.green,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+          ],
+        ),
       );
     } else {
       if (state == 1) {
@@ -261,22 +286,32 @@ class _TaskPageState extends State<TaskPage> {
         );
       } else {
         if (state == -1) {
-          return Row(
-            children: [
-              Text(
-                '반려됨',
-                style: TextStyle(color: Colors.red),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              ElevatedButton(
+          return Expanded(
+            child: Row(
+              children: [
+                Text(
+                  '반려됨',
+                  style: TextStyle(color: Colors.red),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Spacer(),
+                IconButton(
                   onPressed: () {
                     SetState(1, todo);
                     setState(() {});
                   },
-                  child: Text('승인 요청하기')),
-            ],
+                  icon: Icon(
+                    Icons.arrow_circle_up_rounded,
+                    color: Colors.green,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
           );
         } else {
           return Text(
@@ -304,12 +339,25 @@ class _TaskPageState extends State<TaskPage> {
     }
     DateTime duedate = date.toDate();
     Duration difference = currentDate.difference(duedate);
-    if (difference.inDays >= -2) {
+    if (difference.inDays >= -2 && difference.inDays < 1) {
       return Text(
         'D ${difference.inDays - 1}',
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
       );
     } else {
+      if (difference.inDays == 1) {
+        return Text(
+          'D - day',
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+        );
+      } else {
+        if (difference.inDays > 1) {
+          return Text(
+            'D+${difference.inDays - 1}',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+          );
+        }
+      }
       return Text('D ${difference.inDays - 1}');
     }
   }
